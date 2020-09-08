@@ -3,6 +3,7 @@
 
 #include <QAbstractTableModel>
 #include <qqml.h>
+#include <QDebug>
 #include <Eigen/Dense>
 
 class TableModel : public QAbstractTableModel {
@@ -12,34 +13,14 @@ class TableModel : public QAbstractTableModel {
   Eigen::MatrixXd m_matrix;
 
 public:
-  int rowCount(const QModelIndex & = QModelIndex()) const override {
-    return 200;
-  }
-
-  int columnCount(const QModelIndex & = QModelIndex()) const override {
-    return 200;
-  }
-
-  void setData(const QString& str) {
-    beginResetModel();
-    // TODO: implement work with clipboard
-    endResetModel();
-  }
-
-  QVariant data(const QModelIndex &index, int role) const override {
-    switch (role) {
-    case Qt::DisplayRole:
-      return QString("%1, %2").arg(index.column()).arg(index.row());
-    default:
-      break;
-    }
-
-    return QVariant();
-  }
-
-  QHash<int, QByteArray> roleNames() const override {
-    return {{Qt::DisplayRole, "display"}};
-  }
+  explicit TableModel();
+  virtual ~TableModel() override;
+  int rowCount(const QModelIndex & = QModelIndex()) const override;
+  int columnCount(const QModelIndex & = QModelIndex()) const override;
+  void setText(const QString &str);
+  QVariant data(const QModelIndex &index, int role) const override;
+  Qt::ItemFlags flags(const QModelIndex& index) const override;
+  QHash<int, QByteArray> roleNames() const override;
 };
 
 #endif // TABLEMODEL_H

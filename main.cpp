@@ -1,5 +1,8 @@
+#include "controller.h"
 #include "tablemodel.h"
 #include <QApplication>
+#include <QClipboard>
+#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
@@ -19,9 +22,12 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    TableModel model;
-    engine.rootContext()->setContextProperty("tablemodel", &model);
+    Controller controller;
+    engine.rootContext()->setContextProperty("tablemodel", controller.model());
     engine.load(url);
+
+    QObject::connect(engine.rootObjects().first(), SIGNAL(paste()), &controller,
+                     SLOT(paste()));
 
     return app.exec();
 }
