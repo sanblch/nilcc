@@ -11,6 +11,8 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_define_targets()
 
 add_executable(${PROJECT_NAME}
+  conc.cpp
+  conc.h
   controller.cpp
   controller.h
   main.cpp
@@ -26,3 +28,11 @@ target_link_libraries(${PROJECT_NAME}
   CONAN_PKG::eigen
   Qt5::Quick
   Qt5::Widgets)
+
+add_executable(test-conc
+  test-conc.cpp
+  conc.cpp
+  conc.h)
+
+target_link_libraries(test-conc
+  CONAN_PKG::eigen)

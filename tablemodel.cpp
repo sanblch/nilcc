@@ -1,7 +1,9 @@
 #include "tablemodel.h"
 #include <limits>
 
-TableModel::TableModel() : QAbstractTableModel() {}
+TableModel::TableModel(Eigen::MatrixXd &matrix)
+    : QAbstractTableModel(), m_matrix(matrix) {}
+
 TableModel::~TableModel() {}
 
 int TableModel::rowCount(const QModelIndex &) const {
@@ -37,6 +39,7 @@ void TableModel::setText(const QString& str) {
     ++ci;
   }
   endResetModel();
+  emit dataChanged(index(0, 0), index(m_matrix.rows(), m_matrix.cols()));
 }
 
 QVariant TableModel::data(const QModelIndex &index, int role) const {

@@ -10,10 +10,10 @@ class TableModel : public QAbstractTableModel {
   Q_OBJECT
   QML_ELEMENT
   QML_ADDED_IN_MINOR_VERSION(1)
-  Eigen::MatrixXd m_matrix;
+  Eigen::MatrixXd& m_matrix;
 
 public:
-  explicit TableModel();
+  explicit TableModel(Eigen::MatrixXd& matrix);
   virtual ~TableModel() override;
   int rowCount(const QModelIndex & = QModelIndex()) const override;
   int columnCount(const QModelIndex & = QModelIndex()) const override;
