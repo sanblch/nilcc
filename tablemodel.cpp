@@ -1,18 +1,11 @@
 #include "tablemodel.h"
+#include <QStringList>
 #include <limits>
 
 TableModel::TableModel(Eigen::MatrixXd &matrix)
-    : QAbstractTableModel(), m_matrix(matrix) {}
+    : QEigenMatrixModel(matrix) {}
 
 TableModel::~TableModel() {}
-
-int TableModel::rowCount(const QModelIndex &) const {
-  return m_matrix.rows();
-}
-
-int TableModel::columnCount(const QModelIndex &) const {
-  return m_matrix.cols();
-}
 
 void TableModel::setText(const QString& str) {
   qDebug() << str;
@@ -40,24 +33,4 @@ void TableModel::setText(const QString& str) {
   }
   endResetModel();
   emit dataChanged(index(0, 0), index(m_matrix.rows(), m_matrix.cols()));
-}
-
-QVariant TableModel::data(const QModelIndex &index, int role) const {
-  switch (role) {
-  case Qt::DisplayRole:
-    if(index.isValid() && index.column() < m_matrix.cols() && index.row() < m_matrix.rows())
-      return QString::number(m_matrix(index.row(), index.column()));
-  default:
-    break;
-  }
-
-  return QVariant();
-}
-
-Qt::ItemFlags TableModel::flags(const QModelIndex &index) const {
-  return QAbstractItemModel::flags(index);
-}
-
-QHash<int, QByteArray> TableModel::roleNames() const {
-  return {{Qt::DisplayRole, "display"}};
 }

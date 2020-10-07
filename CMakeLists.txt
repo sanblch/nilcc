@@ -5,17 +5,21 @@ project(nilcc)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5 5.15 COMPONENTS Quick Widgets)
+find_package(Qt5 5.15 COMPONENTS Charts Quick Widgets)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_define_targets()
 
 add_executable(${PROJECT_NAME}
+  # chartmodel.cpp
+  # chartmodel.h
   conc.cpp
   conc.h
   controller.cpp
   controller.h
   main.cpp
+  qeigenmatrixmodel.cpp
+  qeigenmatrixmodel.h
   qml.qrc
   tablemodel.cpp
   tablemodel.h
@@ -26,6 +30,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
   CONAN_PKG::eigen
+  Qt5::Charts
   Qt5::Quick
   Qt5::Widgets)
 

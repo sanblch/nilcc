@@ -5,6 +5,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickItem>
 
 int main(int argc, char *argv[])
 {
@@ -28,6 +29,10 @@ int main(int argc, char *argv[])
 
     QObject::connect(engine.rootObjects().first(), SIGNAL(paste()), &controller,
                      SLOT(paste()));
+    for(auto obj : engine.rootObjects().first()->children()) {
+        if(obj->objectName() == "chart")
+            controller.setChart(obj);
+    }
 
     return app.exec();
 }

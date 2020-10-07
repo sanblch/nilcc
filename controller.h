@@ -6,15 +6,20 @@
 #include <QMimeData>
 #include <map>
 
+class QLineSeries;
+
 class Controller : public QObject {
   Q_OBJECT
+  QObject *m_chart;
   TableModel *m_model;
   Eigen::MatrixXd m_matrix;
-  std::map<std::vector<double>, Eigen::MatrixXd> m_result;
+  Eigen::MatrixXd m_result;
 
 public:
   explicit Controller();
   virtual ~Controller() override;
+
+  void setChart(QObject* chart);
   TableModel *model();
 
 public slots:
