@@ -41,10 +41,9 @@ Rectangle {
         model: tablemodel
 
         delegate: Rectangle {
-            width: 30
-            height: 15
+            implicitWidth: 30
+            implicitHeight: 15
             TextInput {
-                anchors.fill: parent
                 text: display
                 onAccepted: {
                     tablemodel.setData(row, column, displayText)
@@ -62,14 +61,14 @@ Rectangle {
         yAxis.max = Math.max(...data)
         chart.removeAllSeries()
         for(var i = 0; i < dim[1]; i++) {
-            var series = chart.createSeries(ChartView.SeriesTypeLine, "line"+ i, xAxis, yAxis);
+            var series = chart.createSeries(ChartView.SeriesTypeLine, "s"+ i, xAxis, yAxis);
             series.pointsVisible = true;
             series.color = Qt.rgba(Math.random(),Math.random(),Math.random(),1);
             series.hovered.connect(function(point, state) {
                 var p = chart.mapToPosition(point);
                 tooltip.x = p.x
                 tooltip.y = p.y - tooltip.height
-                tooltip.text = qsTr("pH: %1, c: %2").arg(point.x).arg(point.y)
+                tooltip.text = qsTr("%1 { pH: %2, c: %3 }").arg(series.name).arg(point.x).arg(point.y)
                 tooltip.visible = true
             })
             for(var j = 0; j < dim[0]; j++)

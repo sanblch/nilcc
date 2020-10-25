@@ -1,4 +1,4 @@
-QT += charts qml quick virtualkeyboard
+QT += charts qml quickwidgets
 
 CONFIG += c++11
 
@@ -19,8 +19,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 wasm:QMAKE_LFLAGS += -s TOTAL_MEMORY=33554432
 
 SOURCES += \
+conc.cpp \
 controller.cpp \
 main.cpp \
+mainwindow.cpp \
+qeigenmatrixmodel.cpp \
 tablemodel.cpp
 
 RESOURCES += qml.qrc
@@ -40,5 +43,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    conc.h \
     controller.h \
+    mainwindow.h \
+    qeigenmatrixmodel.h \
     tablemodel.h

@@ -19,7 +19,9 @@ VectorXd brinkley(const MatrixXd &matrix, const VectorXd &lnk,
                   const VectorXd &B, double H, const Sysc &sysc) {
   VectorXd b(matrix.cols());
   VectorXd A;
-  b << -5, -5, H;
+  for(int i = 0; i < B.size() - 1; ++i)
+    b.coeffRef(i) = -5;
+  b.coeffRef(B.size()) = H;
   int count = 0;
   while (count++ < sysc.maxiter) {
     A = (matrix * b + lnk).array().exp().matrix();
@@ -39,8 +41,9 @@ VectorXd brinkley(const MatrixXd &matrix, const VectorXd &lnk,
 VectorXd bugaevsky(const MatrixXd &matrix, const VectorXd &lnk,
                    const VectorXd &B, double H, const Sysc &sysc) {
   VectorXd b(matrix.cols());
-  b << -5, -5, H;
-  std::cout << H << std::endl;
+  for (int i = 0; i < B.size() - 1; ++i)
+    b.coeffRef(i) = -5;
+  b.coeffRef(B.size()) = H;
   VectorXd A = matrix * b + lnk;
   int count = 0;
   while (count++ < sysc.maxiter) {

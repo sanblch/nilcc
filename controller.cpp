@@ -12,9 +12,10 @@ Controller::Controller() {
       std::cout << m_matrix.cols() << std::endl;
       MatrixXd B;
       B.resize(1, basis);
-      B << 0.00481452, 0.01000039;
+      for(int i = 0; i < basis; ++i)
+        B.coeffRef(1, i) = 1;
       Sysc sysc;
-      sysc.concAlg = ConcAlg::BUGAEVSKY;
+      sysc.concAlg = ConcAlg::BRINKLEY;
       sysc.verb = true;
       m_x.clear();
       m_x.push_back(1.0);
@@ -62,14 +63,14 @@ std::vector<double> Controller::x()
     return m_x;
 }
 
-void Controller::paste()
-{
-    qDebug() << "Pasting";
-    //  const auto *mimeData = QApplication::clipboard()->mimeData();
-    //  if(mimeData->hasText()) {
-    //    qDebug() << mimeData->text();
-    //    m_model->setText(mimeData->text());
-    //  } else {
+void Controller::paste() {
+  qDebug() << "Pasting";
+  const auto *mimeData = QApplication::clipboard()->mimeData();
+  if (mimeData->hasText()) {
+    qDebug() << mimeData->text();
+    m_model->setText(mimeData->text());
+  }
+  else {
     m_model->setText("1	0	0	0\n"
                      "0	1	0	0\n"
                      "0	1	-1	-5,5729\n"
@@ -81,5 +82,5 @@ void Controller::paste()
                      "1	2	-5	-24,937\n"
                      "1	2	-6	-38,9666\n"
                      "1	2	-7	-65,7388\n");
-    //  }
+  }
 }
