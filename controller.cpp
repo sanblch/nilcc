@@ -60,7 +60,6 @@ Controller::Controller() {
                 auto serie = new QtCharts::QLineSeries;
                 serie->append(1, 5);
                 serie->append(2, 10);
-                m_chart->
               }
             }
           });

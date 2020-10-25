@@ -1,0 +1,6 @@
+[requires]
+eigen/3.3.90@gm/thirdparty
+
+[generators]
+cmake
+qmake
