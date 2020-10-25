@@ -14,8 +14,6 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_define_targets()
 
 add_executable(${PROJECT_NAME}
-  # chartmodel.cpp
-  # chartmodel.h
   conc.cpp
   conc.h
   controller.cpp
@@ -38,6 +36,8 @@ target_link_libraries(${PROJECT_NAME}
   Qt5::Charts
   Qt5::QuickWidgets
   Qt5::Widgets)
+
+file(COPY main.qml DESTINATION ${CMAKE_BINARY_DIR})
 
 add_executable(test-conc
   test-conc.cpp

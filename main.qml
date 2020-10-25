@@ -40,11 +40,16 @@ Rectangle {
 
         model: tablemodel
 
-        delegate: TextInput {
-            width: 50
-            height: 25
-            text: display
-            onDisplayTextChanged: console.log(displayText)
+        delegate: Rectangle {
+            width: 30
+            height: 15
+            TextInput {
+                anchors.fill: parent
+                text: display
+                onAccepted: {
+                    tablemodel.setData(row, column, displayText)
+                }
+            }
         }
 
     }
@@ -55,6 +60,7 @@ Rectangle {
         var dim = backend.dim()
         var x = backend.x()
         yAxis.max = Math.max(...data)
+        chart.removeAllSeries()
         for(var i = 0; i < dim[1]; i++) {
             var series = chart.createSeries(ChartView.SeriesTypeLine, "line"+ i, xAxis, yAxis);
             series.pointsVisible = true;
@@ -76,7 +82,7 @@ Rectangle {
     ChartView {
         id: chart
         objectName: "chart"
-        title: "Concentrations"
+        title: "Concentration"
         anchors.left: matrix.right
         anchors.right: parent.right
         anchors.top: parent.top
