@@ -40,12 +40,11 @@ Rectangle {
 
         model: tablemodel
 
-        delegate: Rectangle {
-            implicitWidth: 50
-            implicitHeight: 25
-            Text {
-                text: display
-            }
+        delegate: TextInput {
+            width: 50
+            height: 25
+            text: display
+            onDisplayTextChanged: console.log(displayText)
         }
 
     }

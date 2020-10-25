@@ -9,10 +9,13 @@ class TableModel : public QEigenMatrixModel {
   QML_ELEMENT
   QML_ADDED_IN_MINOR_VERSION(1)
 
-public:
+  double parseDouble(const QString &data);
+
+  public:
   explicit TableModel(Eigen::MatrixXd& matrix);
   virtual ~TableModel() override;
   void setText(const QString &str);
+  Q_INVOKABLE void setData(int row, int column, const QVariant &data);
 };
 
 #endif // TABLEMODEL_H
