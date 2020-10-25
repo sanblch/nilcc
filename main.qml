@@ -60,7 +60,13 @@ Rectangle {
             var series = chart.createSeries(ChartView.SeriesTypeLine, "line"+ i, xAxis, yAxis);
             series.pointsVisible = true;
             series.color = Qt.rgba(Math.random(),Math.random(),Math.random(),1);
-            series.hovered.connect(function(point, state){ console.log(point); }); // connect onHovered signal to a function
+            series.hovered.connect(function(point, state) {
+                var p = chart.mapToPosition(point);
+                tooltip.x = p.x
+                tooltip.y = p.y - tooltip.height
+                tooltip.text = qsTr("pH: %1, c: %2").arg(point.x).arg(point.y)
+                tooltip.visible = true
+            })
             for(var j = 0; j < dim[0]; j++)
             {
                 series.append(x[j], data[j + i * dim[0]]);
@@ -87,5 +93,16 @@ Rectangle {
                 min: 0.0
                 max: 1.0
             }]
+
+        ToolTip {
+            id: tooltip
+            contentItem: Text{
+                color: "#21be2b"
+                text: tooltip.text
+            }
+            background: Rectangle {
+                border.color: "#21be2b"
+            }
+        }
     }
 }
