@@ -35,10 +35,12 @@ int main() {
   sysc.verb = true;
 
   double h = 1.0;
-  while(h < 14) {
-    std::cout << "************************* " << h
-              << " *******************************" << std::endl;
-    nfconc(data.matrix, data.lnk, data.B, std::exp(std::pow(10.0, -h)), sysc);
-    h += 0.5;
+  while (h < 14) {
+      std::cout << "************************* " << h << " *******************************"
+                << std::endl;
+      VectorXd hv(1);
+      hv.coeffRef(0) = std::exp(std::pow(10.0, -h));
+      nfconc(data.matrix, data.lnk, data.B, hv, sysc);
+      h += 0.5;
   }
 }

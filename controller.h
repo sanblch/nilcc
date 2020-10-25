@@ -13,15 +13,24 @@ class Controller : public QObject {
   QObject *m_chart;
   TableModel *m_model;
   Eigen::MatrixXd m_matrix;
-  Eigen::MatrixXd m_result;
+  std::vector<int> m_dim;
+  std::vector<double> m_result;
+  std::vector<double> m_x;
 
-public:
+  public:
   explicit Controller();
   virtual ~Controller() override;
 
   void setChart(QObject* chart);
   TableModel *model();
 
-public slots:
+  Q_INVOKABLE std::vector<int> dim();
+  Q_INVOKABLE std::vector<double> x();
+  Q_INVOKABLE std::vector<double> result();
+
+  signals:
+  void calculated();
+
+  public slots:
   void paste();
 };

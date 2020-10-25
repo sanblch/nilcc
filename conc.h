@@ -14,5 +14,8 @@ struct Sysc {
   double tolfun{1e-30};
 };
 
-MatrixXd nfconc(const MatrixXd &matrix, const VectorXd &lnk,
-                const MatrixXd &basis, double H, const Sysc &sysc);
+MatrixXd nfconc(const MatrixXd &matrix,
+                const VectorXd &lnk,
+                const MatrixXd &basis,
+                const VectorXd &H,
+                const Sysc &sysc);

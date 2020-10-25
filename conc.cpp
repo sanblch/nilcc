@@ -40,6 +40,7 @@ VectorXd bugaevsky(const MatrixXd &matrix, const VectorXd &lnk,
                    const VectorXd &B, double H, const Sysc &sysc) {
   VectorXd b(matrix.cols());
   b << -5, -5, H;
+  std::cout << H << std::endl;
   VectorXd A = matrix * b + lnk;
   int count = 0;
   while (count++ < sysc.maxiter) {
@@ -61,17 +62,19 @@ VectorXd bugaevsky(const MatrixXd &matrix, const VectorXd &lnk,
   return A;
 }
 
-MatrixXd nfconc(const MatrixXd &matrix, const VectorXd &lnk, const MatrixXd &B,
-                double H, const Sysc &sysc) {
-  MatrixXd A = MatrixXd::Zero(B.rows(), matrix.rows());
-  for (int i = 0; i < B.rows(); ++i) {
-    if (sysc.concAlg == BUGAEVSKY) {
-      A.row(i) =
-        bugaevsky(matrix, lnk, B.row(i), H, sysc).array().exp().matrix();
+MatrixXd nfconc(const MatrixXd &matrix,
+                const VectorXd &lnk,
+                const MatrixXd &B,
+                const VectorXd &H,
+                const Sysc &sysc)
+{
+    MatrixXd A = MatrixXd::Zero(B.rows(), matrix.rows());
+    for (int i = 0; i < B.rows(); ++i) {
+        if (sysc.concAlg == BUGAEVSKY) {
+            A.row(i) = bugaevsky(matrix, lnk, B.row(i), H.coeff(i), sysc).array().exp().matrix();
+        } else if (sysc.concAlg == BRINKLEY) {
+            A.row(i) = brinkley(matrix, lnk, B.row(i), H.coeff(i), sysc);
+        }
     }
-    else if (sysc.concAlg == BRINKLEY) {
-      A.row(i) = brinkley(matrix, lnk, B.row(i), H, sysc);
-    }
-  }
-  return A;
+    return A;
 }
