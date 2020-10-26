@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Window 2.15
 import QtCharts 2.15
 
-Rectangle {
+ApplicationWindow {
     id: root
     visible: true
     width: 640
@@ -11,19 +11,13 @@ Rectangle {
 
     signal paste()
 
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onClicked: {
-            if (mouse.button === Qt.RightButton)
-                contextMenu.popup()
-        }
-
+    menuBar: MenuBar {
         Menu {
-            id: contextMenu
-            MenuItem {
-                text: "Paste"
-                onClicked: root.paste()
+            title: qsTr("&Edit")
+            Action {
+                text: qsTr("&Paste")
+                shortcut: StandardKey.Paste
+                onTriggered: root.paste()
             }
         }
     }

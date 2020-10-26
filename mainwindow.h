@@ -1,15 +1,14 @@
 #pragma once
 
 #include "controller.h"
-#include <QFileSystemWatcher>
-#include <QQuickWidget>
+#include <QQmlApplicationEngine>
 
-class MainWindow : public QQuickWidget {
+class MainWindow : public QObject {
   Q_OBJECT
   Controller m_controller;
-  QFileSystemWatcher m_watcher;
+  QQmlApplicationEngine engine;
   QString m_path;
 
 public:
-  explicit MainWindow(QWidget* parent = nullptr);
+  explicit MainWindow(QObject *parent = nullptr);
 };
