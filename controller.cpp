@@ -6,81 +6,69 @@
 #include <iostream>
 
 Controller::Controller() {
+  m_init = new TableModel(m_conc);
+  connect(m_init, &QAbstractItemModel::dataChanged,
+          [this](const QModelIndex &, const QModelIndex &) { calculate(); });
   m_model = new TableModel(m_matrix);
-  connect(m_model, &QAbstractItemModel::dataChanged, [this](const QModelIndex &, const QModelIndex &) {
-      auto basis = m_matrix.cols() - 2;
-      std::cout << m_matrix.cols() << std::endl;
-      MatrixXd B;
-      B.resize(1, basis);
-      for(int i = 0; i < basis; ++i)
-        B.coeffRef(1, i) = 1;
-      Sysc sysc;
-      sysc.concAlg = ConcAlg::BRINKLEY;
-      sysc.verb = true;
-      m_x.clear();
-      m_x.push_back(1.0);
-      while (m_x[m_x.size() - 1] < 14)
-          m_x.push_back(m_x[m_x.size() - 1] + 0.5);
-      m_dim = {static_cast<int>(m_x.size()), static_cast<int>(m_matrix.rows())};
-      m_result.resize(m_dim[0] * m_dim[1]);
-      Map<MatrixXd> result(m_result.data(), m_dim[0], m_dim[1]);
-      Map<VectorXd> h(m_x.data(), m_x.size());
-      for (unsigned i = 0; i < m_x.size(); ++i) {
-          std::cout << "************************* " << m_x[i] << " *******************************"
-                    << std::endl;
-          VectorXd h(1);
-          h.coeffRef(0) = std::log(std::pow(10.0, -m_x[i]));
-          result.row(i) = nfconc(m_matrix.leftCols(basis + 1), m_matrix.rightCols(1), B, h, sysc);
-          std::cout << result.row(i) << std::endl;
-      }
-      emit calculated();
-  });
+  connect(m_model, &QAbstractItemModel::dataChanged,
+          [this](const QModelIndex &, const QModelIndex &) { calculate(); });
 }
 
 Controller::~Controller() {
-    delete m_model; }
-
-void Controller::setChart(QObject *chart) {
-  m_chart = chart;
+  delete m_init;
+  delete m_model;
 }
 
-TableModel *Controller::model() {
-    return m_model;
+void Controller::calculate() {
+  if (!m_conc.size() || !m_matrix.size())
+    return;
+  auto basis = m_matrix.cols() - 2;
+  std::cout << m_matrix.cols() << std::endl;
+  MatrixXd B;
+  B.resize(1, basis);
+  B.row(0) = m_conc.row(0);
+  Sysc sysc;
+  sysc.concAlg = ConcAlg::BRINKLEY;
+  sysc.verb = true;
+  m_x.clear();
+  m_x.push_back(1.0);
+  while (m_x[m_x.size() - 1] < 14)
+    m_x.push_back(m_x[m_x.size() - 1] + 0.5);
+  m_dim = {static_cast<int>(m_x.size()), static_cast<int>(m_matrix.rows())};
+  m_result.resize(m_dim[0] * m_dim[1]);
+  Map<MatrixXd> result(m_result.data(), m_dim[0], m_dim[1]);
+  Map<VectorXd> h(m_x.data(), m_x.size());
+  for (unsigned i = 0; i < m_x.size(); ++i) {
+    std::cout << "************************* " << m_x[i]
+              << " *******************************" << std::endl;
+    VectorXd h(1);
+    h.coeffRef(0) = std::log(std::pow(10.0, -m_x[i]));
+    result.row(i) = nfconc(m_matrix.leftCols(basis + 1), m_matrix.rightCols(1),
+                           B, h, m_conc.row(1), sysc);
+    std::cout << result.row(i) << std::endl;
+  }
+  emit calculated();
 }
 
-std::vector<int> Controller::dim()
-{
-    return m_dim;
-}
+void Controller::setChart(QObject *chart) { m_chart = chart; }
 
-std::vector<double> Controller::result()
-{
-    return m_result;
-}
+TableModel *Controller::init() { return m_init; }
 
-std::vector<double> Controller::x()
-{
-    return m_x;
-}
+TableModel *Controller::model() { return m_model; }
+
+std::vector<int> Controller::dim() { return m_dim; }
+
+std::vector<double> Controller::result() { return m_result; }
+
+std::vector<double> Controller::x() { return m_x; }
 
 void Controller::paste() {
   qDebug() << "Pasting";
   const auto *mimeData = QApplication::clipboard()->mimeData();
   if (mimeData->hasText()) {
-    qDebug() << mimeData->text();
-    m_model->setText(mimeData->text());
-  }
-  else {
-    m_model->setText("1	0	0	0\n"
-                     "0	1	0	0\n"
-                     "0	1	-1	-5,5729\n"
-                     "0	1	-2	-18,9986\n"
-                     "0	1	-3	-40,1893\n"
-                     "1	1	-2	-6,9054\n"
-                     "1	1	-3	-17,0345\n"
-                     "1	2	-4	-16,1181\n"
-                     "1	2	-5	-24,937\n"
-                     "1	2	-6	-38,9666\n"
-                     "1	2	-7	-65,7388\n");
+    auto str = mimeData->text();
+    auto index = str.indexOf('\n', str.indexOf('\n') + 1) + 1;
+    m_init->setText(str.left(index));
+    m_model->setText(str.mid(index));
   }
 }

@@ -18,4 +18,5 @@ MatrixXd nfconc(const MatrixXd &matrix,
                 const VectorXd &lnk,
                 const MatrixXd &basis,
                 const VectorXd &H,
+                const VectorXd &lgc,
                 const Sysc &sysc);

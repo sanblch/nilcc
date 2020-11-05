@@ -16,11 +16,11 @@ MatrixXd jconc(const VectorXd &A, const MatrixXd &matrix, int basis) {
 }
 
 VectorXd brinkley(const MatrixXd &matrix, const VectorXd &lnk,
-                  const VectorXd &B, double H, const Sysc &sysc) {
+                  const VectorXd &B, const VectorXd &c, double H,
+                  const Sysc &sysc) {
   VectorXd b(matrix.cols());
   VectorXd A;
-  for(int i = 0; i < B.size() - 1; ++i)
-    b.coeffRef(i) = -5;
+  b.head(B.size()) = c;
   b.coeffRef(B.size()) = H;
   int count = 0;
   while (count++ < sysc.maxiter) {
@@ -39,10 +39,10 @@ VectorXd brinkley(const MatrixXd &matrix, const VectorXd &lnk,
 }
 
 VectorXd bugaevsky(const MatrixXd &matrix, const VectorXd &lnk,
-                   const VectorXd &B, double H, const Sysc &sysc) {
+                   const VectorXd &B, const VectorXd &c, double H,
+                   const Sysc &sysc) {
   VectorXd b(matrix.cols());
-  for (int i = 0; i < B.size() - 1; ++i)
-    b.coeffRef(i) = -5;
+  b.head(B.size()) = c;
   b.coeffRef(B.size()) = H;
   VectorXd A = matrix * b + lnk;
   int count = 0;
@@ -65,19 +65,23 @@ VectorXd bugaevsky(const MatrixXd &matrix, const VectorXd &lnk,
   return A;
 }
 
-MatrixXd nfconc(const MatrixXd &matrix,
-                const VectorXd &lnk,
-                const MatrixXd &B,
-                const VectorXd &H,
-                const Sysc &sysc)
-{
-    MatrixXd A = MatrixXd::Zero(B.rows(), matrix.rows());
-    for (int i = 0; i < B.rows(); ++i) {
-        if (sysc.concAlg == BUGAEVSKY) {
-            A.row(i) = bugaevsky(matrix, lnk, B.row(i), H.coeff(i), sysc).array().exp().matrix();
-        } else if (sysc.concAlg == BRINKLEY) {
-            A.row(i) = brinkley(matrix, lnk, B.row(i), H.coeff(i), sysc);
-        }
+MatrixXd nfconc(const MatrixXd &matrix, const VectorXd &lnk, const MatrixXd &B,
+                const VectorXd &H, const VectorXd &lgc, const Sysc &sysc) {
+  // convert input to understandable data
+  MatrixXd m = matrix;
+  m(Eigen::all, Eigen::last) = -m(Eigen::all, Eigen::last);
+  VectorXd k = pow(10, lnk.array()).log().matrix();
+  VectorXd c = pow(10, lgc.array()).log().matrix();
+
+  MatrixXd A = MatrixXd::Zero(B.rows(), matrix.rows());
+  for (int i = 0; i < B.rows(); ++i) {
+    if (sysc.concAlg == BUGAEVSKY) {
+      A.row(i) =
+          bugaevsky(m, k, B.row(i), c, H.coeff(i), sysc).array().exp().matrix();
     }
-    return A;
+    else if (sysc.concAlg == BRINKLEY) {
+      A.row(i) = brinkley(m, k, B.row(i), c, H.coeff(i), sysc);
+    }
+  }
+  return A;
 }

@@ -4,6 +4,7 @@
 #include <QQuickItem>
 
 MainWindow::MainWindow(QObject *parent) : m_path("qrc:/main.qml") {
+  engine.rootContext()->setContextProperty("concmodel", m_controller.init());
   engine.rootContext()->setContextProperty("tablemodel", m_controller.model());
   engine.rootContext()->setContextProperty("backend", &m_controller);
   engine.load(QUrl(m_path));

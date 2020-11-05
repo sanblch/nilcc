@@ -24,9 +24,9 @@ void TableModel::setText(const QString &str)
     size_t size = 0;
     QList<QStringList> llst;
     for (const auto &i : lst) {
-        llst.append(i.split("\t"));
-        if (llst.last().size() > size)
-            size = llst.last().size();
+      llst.append(i.split("\t", QString::SkipEmptyParts));
+      if (llst.last().size() > size)
+        size = llst.last().size();
     }
     beginResetModel();
     m_matrix.resize(llst.size(), size);

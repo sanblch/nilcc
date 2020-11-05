@@ -25,8 +25,10 @@ ApplicationWindow {
     TableView {
         id: matrix
         anchors.left: parent.left
+        anchors.leftMargin: 15
         anchors.top: parent.top
-        anchors.bottom: parent.bottom
+        anchors.topMargin: 15
+        height: 370
         width: 320
         columnSpacing: 1
         rowSpacing: 1
@@ -41,6 +43,34 @@ ApplicationWindow {
                 text: display
                 onAccepted: {
                     tablemodel.setData(row, column, displayText)
+                }
+            }
+        }
+
+    }
+
+    TableView {
+        id: conc
+        y: 100
+        anchors.left: matrix.left
+        anchors.top: matrix.bottom
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 15
+        height: 30
+        width: 320
+        columnSpacing: 1
+        rowSpacing: 1
+        clip: true
+
+        model: concmodel
+
+        delegate: Rectangle {
+            implicitWidth: 30
+            implicitHeight: 15
+            TextInput {
+                text: display
+                onAccepted: {
+                    concmodel.setData(row, column, displayText)
                 }
             }
         }
