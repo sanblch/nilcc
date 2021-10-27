@@ -1,4 +1,6 @@
 #include "tablemodel.h"
+#include <QLocale>
+#include <QString>
 #include <QStringList>
 #include <limits>
 
@@ -20,11 +22,11 @@ double TableModel::parseDouble(const QString &data)
 void TableModel::setText(const QString &str)
 {
     qDebug() << str;
-    auto lst = str.split("\n", QString::SkipEmptyParts);
+    auto lst = str.split("\n", Qt::SkipEmptyParts);
     size_t size = 0;
     QList<QStringList> llst;
     for (const auto &i : lst) {
-      llst.append(i.split("\t", QString::SkipEmptyParts));
+      llst.append(i.split("\t", Qt::SkipEmptyParts));
       if (llst.last().size() > size)
         size = llst.last().size();
     }
