@@ -87,3 +87,13 @@ add_executable(test-conc
 
 target_link_libraries(test-conc
   CONAN_PKG::eigen)
+
+add_executable(test-stb
+  test-stb.cpp
+  stb.h)
+
+target_link_libraries(test-stb
+  CONAN_PKG::ctre
+  CONAN_PKG::eigen
+  CONAN_PKG::tomlplusplus
+  )
