@@ -1,6 +1,8 @@
 [requires]
+backward-cpp/1.6
 ctre/3.4.1
 eigen/3.4.0
+repr/1.0.1@sanblch/stable
 tomlplusplus/2.5.0
 
 [generators]
