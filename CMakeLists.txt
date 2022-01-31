@@ -88,12 +88,19 @@ add_executable(test-conc
 target_link_libraries(test-conc
   CONAN_PKG::eigen)
 
+find_package (Python3 COMPONENTS Interpreter Development REQUIRED)
+
 add_executable(test-stb
   conc.cpp
   conc.h
+  matplotlibcpp/matplotlibcpp.h
   matrix.h
   stb.h
   test-stb.cpp
+  )
+
+target_compile_definitions(test-stb
+  PRIVATE WITHOUT_NUMPY=1
   )
 
 target_link_libraries(test-stb
@@ -102,4 +109,5 @@ target_link_libraries(test-stb
   CONAN_PKG::eigen
   CONAN_PKG::repr
   CONAN_PKG::tomlplusplus
+  Python3::Python
   )

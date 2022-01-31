@@ -1,4 +1,5 @@
 #include "conc.h"
+#include "matplotlibcpp/matplotlibcpp.h"
 #include "matrix.h"
 #include "stb.h"
 
@@ -6,6 +7,9 @@
 #include <toml++/toml.h>
 
 #include <filesystem>
+#include <span>
+
+namespace plt = matplotlibcpp;
 
 int main(int argc, char *argv[]) {
   backward::SignalHandling sh;
@@ -45,25 +49,53 @@ int main(int argc, char *argv[]) {
       }
     }
   }
-
   std::cout << repr(mdata.basis) << std::endl;
-
   for (const auto &el : data) {
     mdata.insert_data(el);
   }
 
-  std::cout << mdata.matrix << std::endl;
-  std::cout << mdata.lgk << std::endl;
+  auto additional = tbl["additional"];
+  struct BisComplex {
+    std::string ligand;
+    unsigned col;
+    std::vector<std::pair<unsigned, unsigned>> row;
+  };
+  std::vector<BisComplex> complexes;
+  if (toml::array *arr = additional.as_array()) {
+    for (const auto &el : *arr) {
+      auto ligand = el.value<std::string>().value();
+      auto it = std::ranges::find(mdata.basis, ligand);
+      auto col = std::distance(mdata.basis.begin(), it);
+      std::vector<std::pair<unsigned, unsigned>> row;
+      Eigen::VectorXd vec = Eigen::VectorXd::Zero(mdata.basis.size());
+      vec(0) = 1;
+      vec(col) = 2;
+      for (unsigned i = 0; i < mdata.matrix.rows(); ++i) {
+        if (mdata.matrix.row(i).transpose().head(mdata.basis.size()) == vec) {
+          row.push_back({i, mdata.matrix(i, Eigen::last)});
+        }
+      }
+      if (row.size()) {
+        complexes.push_back({ligand, col, row});
+        std::cout << repr(*complexes.rbegin()) << std::endl;
+      }
+    }
+  }
+
+  // std::cout << mdata.matrix << std::endl;
+  // std::cout << mdata.lgk << std::endl;
 
   auto basis = mdata.matrix.cols() - 1;
   Eigen::MatrixXd B;
-  B.setConstant(1, basis, 0.005);
+  B.setConstant(1, basis, 0.1);
+  B(0, 0) = 0.001;
+  B(0, 1) = 0.001;
   Eigen::VectorXd b;
   b.setConstant(basis, -1);
 
   Sysc sysc;
   sysc.concAlg = ConcAlg::BRINKLEY;
-  sysc.verb = true;
+  // sysc.verb = true;
 
   std::vector<double> x;
   x.push_back(1.0);
@@ -71,11 +103,31 @@ int main(int argc, char *argv[]) {
     x.push_back(x[x.size() - 1] + 0.5);
   Map<VectorXd> h(x.data(), x.size());
 
+  MatrixXd A(x.size(), mdata.matrix.rows());
   for (unsigned i = 0; i < x.size(); ++i) {
     std::cout << "************************* " << x[i]
               << " *******************************" << std::endl;
     VectorXd h(1);
     h.coeffRef(0) = std::log(std::pow(10.0, -x[i]));
-    std::cout << nfconc(mdata.matrix, mdata.lgk, B, h, b, sysc) << std::endl;
+    A.row(i) = nfconc(mdata.matrix, mdata.lgk, B, h, b, sysc);
   }
+
+  // std::cout << A << std::endl;
+
+  MatrixXd S = A;
+
+  for (unsigned i = 0; i < A.cols(); ++i) {
+    if (mdata.matrix(i, 0) != 0) {
+      S.col(i) = mdata.matrix(i, 0) * A.col(i) / B(0, 0);
+    }
+    else {
+      S.col(i).setZero();
+    }
+  }
+
+  plt::figure_size(1200, 700);
+  for (unsigned i = 0; i < S.cols(); ++i) {
+    plt::plot(x, std::span(S.col(i).data(), S.rows()));
+  }
+  plt::save("./result.png");
 }
