@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Eigen/Dense>
 #include <ctre.hpp>
 
@@ -9,11 +11,9 @@
 
 namespace stb {
 
-enum BASIS { M, L, H };
-
 struct Equil {
   Eigen::VectorXd lgk;
-  Eigen::MatrixXi matrix;
+  Eigen::MatrixXd matrix;
 };
 
 Equil readEquil(const std::string &filename) {
@@ -37,7 +37,7 @@ Equil readEquil(const std::string &filename) {
     bool is_matrix_read = false;
     unsigned basis = -1;
     size_t size = it->second.size();
-    Eigen::MatrixXi &matrix = res.matrix;
+    Eigen::MatrixXd &matrix = res.matrix;
     Eigen::VectorXd &lnk = res.lgk;
     for (const auto &l : it->second) {
       if (!is_matrix_read) {
