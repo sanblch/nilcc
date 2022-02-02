@@ -109,5 +109,6 @@ target_link_libraries(test-stb
   CONAN_PKG::eigen
   CONAN_PKG::repr
   CONAN_PKG::tomlplusplus
+  CONAN_PKG::xlnt
   Python3::Python
   )

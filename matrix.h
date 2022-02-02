@@ -52,26 +52,34 @@ struct MainData {
       }
       if(unmatched.size() > 0) {
         std::cout << unmatched.size() << std::endl;
-        matrix.conservativeResize(matrix.rows() + unmatched.size(), basis.size() + 1);
-        matrix(row_indexes, Eigen::all) = Eigen::MatrixXd::Zero(unmatched.size(), basis.size() + 1);
+        matrix.conservativeResize(matrix.rows() + unmatched.size(), Eigen::NoChange);
+        matrix(row_indexes, Eigen::all).setZero();
         matrix(row_indexes, indexes) = data.equilibria.matrix(unmatched, Eigen::all);
 
         lgk.conservativeResize(lgk.size() + unmatched.size());
-        lgk(row_indexes) = Eigen::VectorXd::Zero(unmatched.size());
         lgk(row_indexes) = data.equilibria.lgk(unmatched);
       }
     }
     std::cout << repr(insert_indexes(data.basis)) << std::endl;
   }
 
+  unsigned index(const std::string& b) {
+    auto it = std::ranges::find(basis, b);
+    return std::distance(basis.begin(), it);
+  }
+
   std::vector<unsigned> insert_indexes(const std::vector<std::string>& b) {
     std::vector<unsigned> res;
     for(const auto& el : b) {
-      auto it = std::ranges::find(basis, el);
-      auto index = std::distance(basis.begin(), it);
-      res.push_back(index);
+      res.push_back(index(el));
     }
     res.push_back(basis.size());
     return res;
+  }
+
+  void display() {
+    for(unsigned i = 0; i < matrix.rows(); ++i) {
+      std::cout << i << ".\t" << matrix.row(i) << "\t" << lgk(i) << std::endl;
+    }
   }
 };
