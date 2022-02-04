@@ -129,9 +129,9 @@ int main(int argc, char *argv[]) {
   // sysc.verb = true;
 
   std::vector<double> x;
-  x.push_back(1.0);
-  while (x[x.size() - 1] < 14)
-    x.push_back(x[x.size() - 1] + 0.5);
+  x.push_back(1.4);
+  while (x[x.size() - 1] < 8)
+    x.push_back(x[x.size() - 1] + 0.2);
   Map<VectorXd> h(x.data(), x.size());
 
   MatrixXd A(x.size(), mdata.matrix.rows());
@@ -154,10 +154,58 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  {
+    unsigned count = 0;
+    for (auto col : S.colwise()) {
+      auto it = std::max_element(col.begin(), col.end());
+      if (*it > 0.09) {
+        std::cout << count << "\t" << x[std::distance(col.begin(), it)] << "\t"
+                  << *it << std::endl;
+      }
+      count++;
+    }
+  }
+
   plt::figure_size(1200, 700);
   for (unsigned i = 0; i < S.cols(); ++i) {
-    plt::plot(x, std::span(S.col(i).data(), S.rows()));
+    if (i == 0) {
+      plt::plot(x, std::span{S.col(i).data(), S.rows()}, "b--",
+                {{"label", "$Cu^{2+}$"}});
+    }
+    else if (i == 5) {
+      plt::plot(x, std::span{S.col(i).data(), S.rows()},
+                {{"label", "$Cu(Phen)$"}, {"color", "black"}});
+    }
+    else if (i == 18) {
+      plt::plot(x, std::span{S.col(i).data(), S.rows()}, "r--",
+                {{"label", "$Cu(His)(HisH)$"}});
+    }
+    else if (i == 19) {
+      plt::plot(x, std::span{S.col(i).data(), S.rows()}, "g--",
+                {{"label", "$Cu(His)_{2}$"}});
+    }
+    else if (i == 25) {
+      plt::plot(x, std::span{S.col(i).data(), S.rows()},
+                {{"label", "$Cu(Phen)(HisH)$"}, {"color", "red"}});
+    }
+    else if (i == 26) {
+      plt::plot(x, std::span{S.col(i).data(), S.rows()},
+                {{"label", "$Cu(Phen)(His)$"}, {"color", "blue"}});
+    }
+    else if (i == 58) {
+      plt::plot(x, std::span{S.col(i).data(), S.rows()},
+                {{"label", "$Cu(Phen)(Glu)$"}, {"color", "green"}});
+    }
+    else if (i == 102) {
+      plt::plot(x, std::span{S.col(i).data(), S.rows()}, "y--",
+                {{"label", "$Cu(Phen)(Phe)$"}});
+    }
+    else {
+      plt::plot(x, std::span(S.col(i).data(), S.rows()));
+    }
   }
+  plt::xlabel("pH");
+  plt::ylabel("α");
   plt::legend();
   plt::save("./result.png");
 
